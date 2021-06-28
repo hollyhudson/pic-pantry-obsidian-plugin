@@ -1,3 +1,5 @@
+**If the Obsidian Sample Plugin boilerplate readme text is still there below this line, then you probably don't want to download or try running this code.**
+
 ## Obsidian Sample Plugin
 
 This is a sample plugin for Obsidian (https://obsidian.md).
