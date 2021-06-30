@@ -1,43 +1,38 @@
-import { App, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+/*
+Refrigerator by Kieu Thi Kim Cuong from the Noun Project
+*/
 
-interface MyPluginSettings {
+import { App, Vault, Modal, Notice, Plugin, PluginSettingTab, Setting, addIcon, TFile, TAbstractFile } from 'obsidian';
+
+interface ProvisionsViewSettings {
 	mySetting: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
+const DEFAULT_SETTINGS: ProvisionsViewSettings = {
 	mySetting: 'default'
 }
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+export default class ProvisionsView extends Plugin {
+	provisionsView: ProvisionsView
+	settings: ProvisionsViewSettings;
 
 	async onload() {
-		console.log('loading plugin');
+		console.log('loading Provisions View plugin');
 
 		await this.loadSettings();
 
-		this.addRibbonIcon('dice', 'Sample Plugin', () => {
-			new Notice('This is a notice!');
-		});
+		this.addRibbonIcon(
+			'fridge',
+			'Provisions View',
+			this.makeProvisionsView
+		);
 
 		this.addStatusBarItem().setText('Status Bar Text');
 
 		this.addCommand({
-			id: 'open-sample-modal',
-			name: 'Open Sample Modal',
-			// callback: () => {
-			// 	console.log('Simple Callback');
-			// },
-			checkCallback: (checking: boolean) => {
-				let leaf = this.app.workspace.activeLeaf;
-				if (leaf) {
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-					return true;
-				}
-				return false;
-			}
+			id: 'provisions-view',
+			name: 'Open Provisions View',
+			callback: this.makeProvisionsView,
 		});
 
 		this.addSettingTab(new SampleSettingTab(this.app, this));
@@ -53,6 +48,81 @@ export default class MyPlugin extends Plugin {
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
 
+	makeProvisionsView = async () => {
+
+		// grab all the files so we can find things later
+		const allFiles = await this.app.vault.getAllLoadedFiles();
+
+		const pantryFileContents = await this.app.vault.adapter.read('Pantry.md');
+		// Parse the contents of the pantry file
+		const lines = pantryFileContents.split('\n');
+		
+		let color = 'grey';
+
+		for (let line of lines) {
+			switch (line.charAt(0)) {
+				case '':
+					break;
+				case '#':
+					switch (line.charAt(3)) {
+						case 'L':
+							// replace these with classes in the css file
+							color = 'white';
+							break;
+						case 'P':
+							color = 'blue';
+							break;
+						case 'V':
+							color = 'green';
+							break;
+						case 'C':
+							color = 'orange';
+							break;
+						case 'F':
+							color = 'purple';
+							break;
+						case 'S':
+							color = 'red';
+							break;
+					}
+					break;
+				case 'F':
+					color = 'grey';
+					break;
+				case '-':
+					let imagePath = '';
+					if (line.charAt(3) == 'x') break;
+			
+					// extract the ingredient file name
+					let ingredient = line.replace('- [ ] [[', '');
+					ingredient = ingredient.replace(']]', '');	
+					
+					// find the file
+					// because not all ingredients are in the pantry folder
+					let ingredientFileContents = '';
+					for (let currentFile of allFiles) {
+						if (!currentFile.hasOwnProperty('basename')) continue;
+						if (currentFile.basename == ingredient) {
+							ingredientFileContents = await this.app.vault.adapter.read(currentFile.path);
+						}
+					}
+					
+					//extract the image file path from the ingredient file
+					if (ingredientFileContents) {
+						let ingredientLines = ingredientFileContents.split('\n');
+						if (ingredientLines[0].charAt(0) != '!') break;
+						let imageFileName = ingredientLines[0].replace('![[', '');
+						imageFileName = imageFileName.replace(']]', '');
+						imagePath = 'media/'.concat(imageFileName);
+					}
+
+					if (imagePath) console.log(imagePath);
+					break;
+			}
+		}
+	};
+
+		
 	onunload() {
 		console.log('unloading plugin');
 	}
@@ -83,9 +153,9 @@ class SampleModal extends Modal {
 }
 
 class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
+	plugin: ProvisionsView;
 
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: ProvisionsView) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -110,3 +180,6 @@ class SampleSettingTab extends PluginSettingTab {
 				}));
 	}
 }
+
+addIcon(
+	'fridge', `<path fill="currentColor" stroke="currentColor" d="M28.9,1.4h-10c-4.7,0-8.5,3.8-8.5,8.5v34c0,0.8,0.7,1.5,1.5,1.5h24.1c0.8,0,1.5-0.7,1.5-1.5v-34C37.4,5.2,33.7,1.4,28.9,1.4  z M35.9,44.3h-24c-0.3,0-0.5-0.2-0.5-0.5v-23h25.1V44C36.4,44.1,36.2,44.3,35.9,44.3z M36.4,19.8h-25V9.9c0-4.1,3.4-7.5,7.5-7.5H29  c4.1,0,7.5,3.4,7.5,7.5v9.9H36.4z"/><path d="M14.6,12.9c-0.3,0-0.5,0.2-0.5,0.5v4c0,0.3,0.2,0.5,0.5,0.5s0.5-0.2,0.5-0.5v-4C15.1,13.1,14.9,12.9,14.6,12.9z"/><path d="M14.6,22.6c-0.3,0-0.5,0.2-0.5,0.5v4c0,0.3,0.2,0.5,0.5,0.5s0.5-0.2,0.5-0.5v-4C15.1,22.9,14.9,22.6,14.6,22.6z"/><path d="M13.9,46.5c0.3,0,0.5-0.2,0.5-0.5s-0.2-0.5-0.5-0.5h-1.3c-0.3,0-0.5,0.2-0.5,0.5s0.2,0.5,0.5,0.5H13.9z"/><path d="M35.2,46.5c0.3,0,0.5-0.2,0.5-0.5s-0.2-0.5-0.5-0.5h-1.3c-0.3,0-0.5,0.2-0.5,0.5s0.2,0.5,0.5,0.5H35.2z"/>`);
