@@ -1,10 +1,10 @@
 {
-	"id": "pantry-pix-plugin",
-	"name": "Pantry Pix Plugin",
+	"id": "provisions-view-plugin",
+	"name": "Provisions View Plugin",
 	"version": "1.0.1",
 	"minAppVersion": "0.9.12",
-	"description": "This is a sample plugin for Obsidian. This plugin demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
+	"description": "This plugin displays image bubbles for items in my fridge. It is a person project that requires a specific file with a specific structure to work.",
+	"author": "Holly Hudson",
 	"authorUrl": "https://obsidian.md/about",
 	"isDesktopOnly": false
 }
