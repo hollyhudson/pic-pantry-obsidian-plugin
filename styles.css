@@ -10,8 +10,9 @@ body {
 .provisions-board {
 	width: 100%;
 	height: 100%;
-	background-color: #333;
+	background-color: white;
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	justify-content: center;
 	overflow: hidden;
@@ -20,11 +21,50 @@ body {
 }
 
 .draggable-bubble {
+	/*justify-content: center;*/
 	width: 100px;
 	height: 100px;
+	overflow: hidden;
 	background-color: rgb(245, 230, 99);
-	border: 10px solid rgba(136, 136, 136, .5);
+	border: 5px solid rgba(136, 136, 136, .5);
 	border-radius: 50%;
 	touch-action: none;
 	user-select: none;
+	background-color: white;
+}
+
+img {
+	/*object-position: center;*/
+	object-fit: cover;
+	/*max-height: 100%;*/
+	/*max-width: 100%;*/
+}
+
+.landscape {
+	height: 100%;
+}
+.portrait {
+	width: 100%;
+}
+
+.freezer {
+	border: 5px solid rgba(176, 199, 235, 1);
+}
+.leftovers {
+	border: 5px solid rgba(200, 200, 200, 1);
+}
+.protein {
+	border: 5px solid rgba(202, 186, 254, 1);
+}
+.veg {
+	border: 5px solid rgba(195, 242, 103, 1);
+}
+.carbs {
+	border: 5px solid rgba(254, 185, 111, 1);
+}
+.fruit {
+	border: 5px solid rgba(254, 200, 254, 1);
+}
+.seasoning {
+	border: 5px solid rgba(197, 1, 0, 1);
 }

@@ -5,7 +5,7 @@ export default class ProvisionsView extends ItemView {
 	linkedLeaf: WorkspaceLeaf;
 	vault: Vault;
 	workspace: Workspace;
-	emptyDiv: HTMLDivElement
+	emptyDiv: HTMLDivElement;
 
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
@@ -48,27 +48,27 @@ export default class ProvisionsView extends ItemView {
 					switch (line.charAt(3)) {
 						case 'L':
 							// replace these with classes in the css file
-							color = '.leftovers';
+							color = 'leftovers';
 							break;
 						case 'P':
-							color = '.protein';
+							color = 'protein';
 							break;
 						case 'V':
-							color = '.veg';
+							color = 'veg';
 							break;
 						case 'C':
-							color = '.carbs';
+							color = 'carbs';
 							break;
 						case 'F':
-							color = '.fruit';
+							color = 'fruit';
 							break;
 						case 'S':
-							color = '.seasoning';
+							color = 'seasoning';
 							break;
 					}
 					break;
 				case 'F':
-					color = '.freezer';
+					color = 'freezer';
 					break;
 				case '-':
 					if (line.charAt(3) == 'x') break;
@@ -98,23 +98,81 @@ export default class ProvisionsView extends ItemView {
 
 						var imageBubble = board.createDiv();
 						imageBubble.addClass('draggable-bubble');
+						imageBubble.addClass(color);
 						var image = contentEl.createEl('img');
 						image.src = this.vault.adapter.getResourcePath(imagePath);
-						//let imageFileObj = this.app.vault.getAbstractFileByPath(imagePath);
+						if (image.width > image.height) {
+							image.addClass('landscape');
+						} else {
+							image.addClass('portrait');
+						}
 						imageBubble.appendChild(image);
 						break;
 					}
 			}
+		}
 
-/*
-			var bubble2 = board.createDiv();
-			bubble2.addClass('draggable-bubble');
-			var image2 = contentEl.createEl('img');
-			image2.src = 'media/chimichurri.png';
-			bubble2.appendChild(image2);
-			//testDiv.removeClass('test');
-*/
+		board.querySelectorAll(".draggable-bubble")
+			.forEach((dragItem) => addDrag(dragItem));
+
+		function addDrag(dragItem) {
+			let active = false;
+			let currentX: number;
+			let currentY: number;
+			let initialX: number;
+			let initialY: number;
+			let xOffset: number = 0;
+			let yOffset: number = 0;
+
+			dragItem.addEventListener("touchstart", dragStart, false);
+			dragItem.addEventListener("touchend", dragEnd, false);
+			dragItem.addEventListener("touchmove", drag, false);
+
+			dragItem.addEventListener("mousedown", dragStart, false);
+			dragItem.addEventListener("mouseup", dragEnd, false);
+			dragItem.addEventListener("mousemove", drag, false);
 		
+			function dragStart(e) {
+				if (e.type === "touchstart") {
+					initialX = e.touches[0].clientX - xOffset;
+					initialY = e.touches[0].clientY - yOffset;
+				} else {
+					initialX = e.clientX - xOffset;
+					initialY = e.clientY - yOffset;
+				}
+	
+				active = true;
+			}
+	
+			function dragEnd(e) {
+				initialX = currentX;
+				initialY = currentY;
+	
+				active = false;
+			}
+	
+			function drag(e) {
+				if (!active) return;
+   		
+				e.preventDefault();
+      	
+				if (e.type === "touchmove") {
+					currentX = e.touches[0].clientX - initialX;
+					currentY = e.touches[0].clientY - initialY;
+				} else {
+					currentX = e.clientX - initialX;
+					currentY = e.clientY - initialY;
+				}
+	
+				xOffset = currentX;
+				yOffset = currentY;
+		
+				setTranslate(currentX, currentY, dragItem);
+			}
+	
+			function setTranslate(xPos: number, yPos: number, el) {
+				el.style.transform = "translate3d(" + xPos + "px, " + yPos + "px, 0)";
+			}
 		}
 	}
 }
