@@ -65,79 +65,7 @@ export default class ProvisionsViewPlugin extends Plugin {
 
 
 	makeProvisionsView = async () => {
-
 		this.initLeaf();
-
-		// grab all the files so we can find things later
-		const allFiles = await this.app.vault.getAllLoadedFiles();
-
-		const pantryFileContents = await this.app.vault.adapter.read('Pantry.md');
-		// Parse the contents of the pantry file
-		const lines = pantryFileContents.split('\n');
-		
-		let color = 'grey';
-
-		for (let line of lines) {
-			switch (line.charAt(0)) {
-				case '':
-					break;
-				case '#':
-					switch (line.charAt(3)) {
-						case 'L':
-							// replace these with classes in the css file
-							color = 'white';
-							break;
-						case 'P':
-							color = 'blue';
-							break;
-						case 'V':
-							color = 'green';
-							break;
-						case 'C':
-							color = 'orange';
-							break;
-						case 'F':
-							color = 'purple';
-							break;
-						case 'S':
-							color = 'red';
-							break;
-					}
-					break;
-				case 'F':
-					color = 'grey';
-					break;
-				case '-':
-					let imagePath = '';
-					if (line.charAt(3) == 'x') break;
-			
-					// extract the ingredient file name
-					let ingredient = line.replace('- [ ] [[', '');
-					ingredient = ingredient.replace(']]', '');	
-					
-					// find the file
-					// because not all ingredients are in the pantry folder
-					let ingredientFileContents = '';
-					for (let currentFile of allFiles) {
-						if (!currentFile.hasOwnProperty('basename')) continue;
-						if (currentFile.basename == ingredient) {
-							ingredientFileContents = await this.app.vault.adapter.read(currentFile.path);
-						}
-					}
-					
-					//extract the image file path from the ingredient file
-					if (ingredientFileContents) {
-						let ingredientLines = ingredientFileContents.split('\n');
-						if (ingredientLines[0].charAt(0) != '!') break;
-						let imageFileName = ingredientLines[0].replace('![[', '');
-						imageFileName = imageFileName.replace(']]', '');
-						imagePath = 'media/'.concat(imageFileName);
-					}
-
-					if (imagePath) console.log(imagePath);
-					break;
-			}
-		}
 	};
 
 		
